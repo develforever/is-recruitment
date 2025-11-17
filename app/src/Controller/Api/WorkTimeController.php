@@ -74,6 +74,6 @@ class WorkTimeController extends AbstractController
         $em->persist($workTime);
         $em->flush();
 
-        return new JsonResponse(['response' => ['message' => 'Czas pracy został dodany']], 201);
+        return new JsonResponse(['response' => ['message' => 'Worktime has been added']], 201);
     }
 }
