@@ -8,6 +8,9 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\Persistence\ManagerRegistry;
 
+/**
+ * @extends ServiceEntityRepository<WorkTime>
+ */
 class WorkTimeRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)

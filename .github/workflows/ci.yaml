@@ -33,7 +33,10 @@ jobs:
         working-directory: ./app
       - name: Run cs fix (check)
         run: composer cs
+        working-directory: ./app
       - name: Run static analysis
         run: composer analyse
+        working-directory: ./app
       - name: Run tests
         run: composer test
+        working-directory: ./app
