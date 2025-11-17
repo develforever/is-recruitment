@@ -1,0 +1,4 @@
+parameters:
+  monthly_norm_hours: 40
+  base_rate: 20.0
+  overtime_multiplier: 2.0
