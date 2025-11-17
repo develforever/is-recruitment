@@ -29,7 +29,8 @@ jobs:
           php-version: '8.2'
           extensions: mbstring, pdo_mysql
       - name: Install composer deps
-        run: composer install --no-progress --no-suggest --prefer-dist
+        run: composer install --no-progress --prefer-dist
+        working-directory: ./app
       - name: Run cs fix (check)
         run: composer cs
       - name: Run static analysis
