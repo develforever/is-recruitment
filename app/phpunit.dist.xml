@@ -19,7 +19,7 @@
 
     <testsuites>
         <testsuite name="Project Test Suite">
-            <directory>tests</directory>
+            <directory suffix="Test.php">tests</directory>
         </testsuite>
     </testsuites>
 
@@ -41,4 +41,9 @@
 
     <extensions>
     </extensions>
+
+     <logging>
+        <log type="junit" target="var/log/phpunit.xml" />
+        <log type="coverage-html" target="var/coverage" />
+    </logging>
 </phpunit>

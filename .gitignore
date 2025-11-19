@@ -5,3 +5,5 @@
 /app/public/bundles/
 /app/var/
 /app/vendor/
+.vscode
+app/.phpunit.result.cache

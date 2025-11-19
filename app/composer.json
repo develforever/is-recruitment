@@ -54,7 +54,8 @@
         "cs": "php-cs-fixer fix --dry-run --diff",
         "cs:fix": "php-cs-fixer fix",
         "analyse": "phpstan analyse",
-        "test": "phpunit --colors=always",
+        "test": "phpunit --configuration phpunit.xml.dist --colors=always",
+        "test:coverage": "phpdbg -qrr vendor/bin/phpunit --configuration phpunit.xml.dist --coverage-html var/coverage",
         "qa": [
             "@cs",
             "@analyse",
