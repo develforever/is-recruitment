@@ -19,6 +19,9 @@ final class TimeCalculatorTest extends TestCase
         $this->calc = new TimeCalculator();
     }
 
+    /**
+     * @return array<int, array{float, float}>
+     */
     public static function roundingProvider(): array
     {
         return [
