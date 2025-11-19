@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace App\Tests\Service;
 
@@ -52,7 +54,7 @@ final class TimeCalculatorTest extends TestCase
         $wt1 = new WorkTime($employee, $start1, $end1);
 
         // worktime 2: 09:00 - 10:10 (70 min -> 1.166..h -> rounds to 1.0h or 1.0? depends on rule)
-        // Using our roundToHalfHour math: 70min -> 1.166..h -> minutes=70 -> rounded = 60 (nearest 30)?? 
+        // Using our roundToHalfHour math: 70min -> 1.166..h -> minutes=70 -> rounded = 60 (nearest 30)??
         // To keep deterministic: choose 09:00-09:40 (40min -> 0.666..h -> rounds to 0.5h)
         $start2 = new \DateTimeImmutable('2025-11-01T09:00:00+01:00');
         $end2 = new \DateTimeImmutable('2025-11-01T09:40:00+01:00'); // 40 min
