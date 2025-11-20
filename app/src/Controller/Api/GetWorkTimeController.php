@@ -6,13 +6,10 @@ use App\Entity\Employee;
 use App\Entity\WorkTime;
 use App\Repository\EmployeeRepository;
 use App\Repository\WorkTimeRepository;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Validator\Constraints as Assert;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 #[Route('/api/worktimes')]
 class GetWorkTimeController extends AbstractController
@@ -45,7 +42,7 @@ class GetWorkTimeController extends AbstractController
                     'startAt'  => $wt->getStartAt()->format(\DATE_ATOM),
                     'endAt'    => $wt->getEndAt()->format(\DATE_ATOM),
                     'startDay' => $wt->getStartDay()->format('Y-m-d'),
-                    'duration' => $wt->getDurationSeconds(), 
+                    'duration' => $wt->getDurationSeconds(),
                 ];
             },
             $workTime

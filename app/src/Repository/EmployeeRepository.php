@@ -5,7 +5,6 @@ namespace App\Repository;
 use App\Entity\Employee;
 use App\Entity\WorkTime;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\DBAL\Types\Types;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
