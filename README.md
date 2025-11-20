@@ -1,4 +1,6 @@
-# Innovation Software recruitment task
+# Time Tracker
+
+API and webapplication from user time tracking purposes.
 
 ## Docker
 
@@ -15,9 +17,11 @@ php bin/console doctrine:migrations:diff
 php bin/console doctrine:migrations:migrate
  ```
 
-Open browser `http://localhost:8000/`
+Open browser `http://localhost:8000/` - this is API base url.
+Open browser `http://localhost:8001/` - this is Frontend base url.
 
-## Endpoints
+
+## API Endpoints
 
 Use curl for example:
 
