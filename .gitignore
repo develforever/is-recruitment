@@ -1,9 +1,9 @@
 .env.local
 .env.local.php
 .env.*.local
-/app/config/secrets/prod/prod.decrypt.private.php
-/app/public/bundles/
-/app/var/
-/app/vendor/
+config/secrets/prod/prod.decrypt.private.php
+public/bundles/
+var/
+vendor/
 .vscode
-app/.phpunit.result.cache
+.phpunit.result.cache
