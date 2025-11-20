@@ -44,4 +44,9 @@ curl 'http://localhost:8000/api/summary?employeeId=<uuid>&date=2025-11-01'
 
 You may use `End-to-End Tests.postman_collection.json`. Import this file in Postman app.
 
+
+# TODO
+
+Add Keycloak for user identity management and more flexible time report for users eg. from mobile app.
+
  
