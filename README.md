@@ -1,6 +1,6 @@
 # Time Tracker
 
-API and webapplication from user time tracking purposes.
+API and webapplication for user time tracking purposes.
 
 ## Docker
 
