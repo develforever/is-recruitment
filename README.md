@@ -47,6 +47,7 @@ You may use `End-to-End Tests.postman_collection.json`. Import this file in Post
 
 # TODO
 
+Add user description for reported work
 Add Keycloak for user identity management and more flexible time report for users eg. from mobile app.
 
  
