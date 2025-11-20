@@ -1,4 +1,6 @@
-FROM time-work-app:latest
+ARG PROJECT_NAME
+
+FROM ${PROJECT_NAME}-app:latest
 
 
 COPY .docker/app-front/docker-entrypoint.sh /usr/local/bin/

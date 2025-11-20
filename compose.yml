@@ -5,7 +5,7 @@ services:
     build:
       context: ./
       dockerfile: ./.docker/app/Dockerfile
-    container_name: symfony_app
+    container_name: ${PROJECT_NAME}-app
     volumes:
     - ./app:/var/www/html
     ports:
@@ -42,7 +42,9 @@ services:
     build:
       context: ./
       dockerfile: ./.docker/app-front/Dockerfile
-    container_name: symfony_app-front
+      args: 
+        PROJECT_NAME: ${PROJECT_NAME}
+    container_name: ${PROJECT_NAME}-front
     volumes:
     - ./app-front:/var/www/html
     ports:
