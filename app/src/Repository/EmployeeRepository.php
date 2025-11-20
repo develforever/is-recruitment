@@ -3,12 +3,11 @@
 namespace App\Repository;
 
 use App\Entity\Employee;
-use App\Entity\WorkTime;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends ServiceEntityRepository<WorkTime>
+ * @extends ServiceEntityRepository<Employee>
  */
 class EmployeeRepository extends ServiceEntityRepository
 {

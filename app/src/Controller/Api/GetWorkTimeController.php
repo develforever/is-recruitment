@@ -14,13 +14,6 @@ use Symfony\Component\Routing\Annotation\Route;
 #[Route('/api/worktimes')]
 class GetWorkTimeController extends AbstractController
 {
-    private WorkTimeRepository $repo;
-
-    public function __construct(WorkTimeRepository $repo)
-    {
-        $this->repo = $repo;
-    }
-
     #[Route('', name: 'api_worktimes_list', methods: ['GET'])]
     public function list(Request $request, EmployeeRepository $employeeRepo, WorkTimeRepository $workRepo): JsonResponse
     {
