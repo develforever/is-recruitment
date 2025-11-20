@@ -1,6 +1,5 @@
 
 interface WorkTime {
-    employeeId: string;
     startAt: string;
     endAt: string;
 }
@@ -8,7 +7,7 @@ interface WorkTime {
 export class TimeTraker {
 
     reportWork(workTime: WorkTime): Promise<Response> {
-        return fetch('/api/worktimes', {
+        return fetch('/api/remote-worktimes', {
             method: "POST",
             mode: "same-origin",
             headers: {

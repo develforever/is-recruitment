@@ -12,33 +12,37 @@ export default function ReportWork({ name = 'Świecie', surname = '' }: Props) {
   const apiService: TimeTraker = new TimeTraker();
 
   const [workDescription, setWorkDescription] = React.useState('');
-  const [workStartHour, setWorkStartHour] = React.useState<number | undefined>(undefined);
-  const [workEndHour, setWorkEndHour] = React.useState<number | undefined>(undefined);
+  const [workStartHour, setWorkStartHour] = React.useState<number | undefined>(8);
+  const [workEndHour, setWorkEndHour] = React.useState<number | undefined>(16);
+  const [status, setStatus] = React.useState<string | undefined>(undefined);
 
   const report = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
 
     const workTime = {
-      employeeId: '123', // This should be dynamic based on the logged-in user. For security reasons this will be filled by api call overlaying session data.
       startAt: `2025-11-01T${workStartHour?.toString().padStart(2, '0')}:00:00+01:00`,
       endAt: `2025-11-01T${workEndHour?.toString().padStart(2, '0')}:00:00+01:00`
     };
 
-    apiService.reportWork(workTime).then(response => {
+    apiService.reportWork(workTime).then(async response => {
+      
+      const data = await response.json();
+
       if (response.ok) {
-        console.log('Praca została zgłoszona pomyślnie.');
+        setStatus(data.message || 'Praca zgłoszona pomyślnie.');
       } else {
-        console.error('Błąd podczas zgłaszania pracy.');
+        setStatus('Błąd serwera: ' + (data.error || data.message || response.statusText));
       }
     }).catch(error => {
-      console.error('Błąd sieci:', error);
+      setStatus('Błąd sieci:' + error.message);
     });
-    console.log('Zgłoszono pracę');
+    setStatus('Zgłoszono pracę');
   };
 
   return <div>
     <p>Witaj {name} {surname}!</p>
     <p>To jest komponent ReportWork.</p>
+    <p>{status}</p>
     <form>
       <label>
         Opis pracy:
@@ -47,12 +51,20 @@ export default function ReportWork({ name = 'Świecie', surname = '' }: Props) {
       <br />
       <label>
         Start pracy (godzina):
-        <input type="number" name="workStartHour" />
+        <input type="number" name="workStartHour" value={workStartHour} 
+        onChange={event => {
+          const num = Number(event.target.value);
+            setWorkStartHour(Number.isNaN(num) ? undefined : num);
+          }} />
       </label>
       <br />
       <label>
         Koniec pracy (godzina):
-        <input type="number" name="workEndHour" />
+        <input type="number" name="workEndHour" value={workEndHour}
+        onChange={event => {
+            const num = Number(event.target.value);
+            setWorkEndHour(Number.isNaN(num) ? undefined : num);
+          }} />
       </label>
       <br />
 
