@@ -1,0 +1,23 @@
+{
+  "compilerOptions": {
+    "target": "ES6",
+    "module": "ESNext",
+    "moduleResolution": "Node",
+    "strict": true,
+    "noImplicitAny": true,
+    "jsx": "react-jsx",
+    "allowJs": true,
+    "skipLibCheck": true,
+    "noEmit": false,
+    "baseUrl": "."
+  },
+  "include": [
+    "assets/**/*.ts",
+    "assets/**/*.tsx",
+    "assets/**/*.js",
+    "assets/**/*.jsx"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}

@@ -1,20 +1,29 @@
 # Time Tracker
 
-API and webapplication from user time tracking purposes.
+API and webapplication for user time tracking purposes.
 
 ## Docker
 
 Start containers:
 
  ```bash
- docker compose up -d
+ bash start.sh
  ```
 
- Make migrations:
+ Make migrations on service `app`:
+
+ For example fron contianer bash:
 
  ```bash
 php bin/console doctrine:migrations:migrate
  ```
+
+ or host:
+
+ ```bash
+ docker compose exec app php bin/console doctrine:migrations:migrate --no-interaction
+ ```
+
 
 Open browser `http://localhost:8000/` - this is API base url.
 Open browser `http://localhost:8001/` - this is Frontend base url.

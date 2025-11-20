@@ -1,0 +1,12 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Time Tracker!{% endblock %}
+
+{% block body %}
+
+<div
+        data-controller="symfony--ux-react--react"
+        data-symfony--ux-react--react-component-value="ReportWork"
+        data-symfony--ux-react--react-props-value="{{ { 'name': 'Robert', 'surname': 'Jamróz'}|json_encode|e('html_attr') }}"
+    ></div>
+{% endblock %}

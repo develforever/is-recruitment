@@ -1,11 +1,9 @@
-version: '3.8'
-
 services:
   app:
     build:
       context: ./
       dockerfile: ./.docker/app/Dockerfile
-    container_name: symfony_app
+    container_name: ${PROJECT_NAME:-time_work}-app
     volumes:
     - ./app:/var/www/html
     ports:
@@ -21,7 +19,7 @@ services:
     container_name: symfony_db
     environment:
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: symfony
+      MYSQL_DATABASE: time_tracker
       MYSQL_USER: symfony
       MYSQL_PASSWORD: symfony
     ports:
@@ -37,6 +35,22 @@ services:
       - "8081:8080"
     depends_on:
       - db
+
+  app-front:
+    build:
+      context: ./
+      dockerfile: ./.docker/app-front/Dockerfile
+      args: 
+        PROJECT_NAME: ${PROJECT_NAME:-time_work}
+    container_name: ${PROJECT_NAME:-time_work}-front
+    volumes:
+    - ./app-front:/var/www/html
+    ports:
+    - '8001:8001'
+    environment:
+      APP_ENV: dev
+    depends_on:
+    - app
 
 volumes:
   db_data:

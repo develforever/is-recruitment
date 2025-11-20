@@ -15,6 +15,9 @@ zip \
 # composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
+COPY --link \
+    --from=ghcr.io/symfony-cli/symfony-cli:latest \
+    /usr/local/bin/symfony /usr/local/bin/symfony
 
 WORKDIR /var/www/html
 
