@@ -1,4 +1,6 @@
 
+import keycloak from '../services/Keycloak';
+
 interface WorkTime {
     startAt: string;
     endAt: string;
@@ -6,26 +8,45 @@ interface WorkTime {
     workDay?: string;
 }
 
+
 export class TimeTraker {
 
     reportWork(workTime: WorkTime): Promise<Response> {
+
+        const token = null; //keycloak.token;
+
+        const headers: HeadersInit = {
+            'Content-Type': 'application/json',
+        };
+
+        if (token) {
+            headers.Authorization = `Bearer ${token}`;
+        }
+
         return fetch('/api/remote-worktimes/create', {
             method: "POST",
             mode: "same-origin",
-            headers: {
-                "Content-Type": "application/json",
-            },
+            headers,
             body: JSON.stringify(workTime)
         });
     }
 
     listWork(): Promise<Response> {
+
+        const token = null; //keycloak.token;
+
+        const headers: HeadersInit = {
+            'Content-Type': 'application/json',
+        };
+
+        if (token) {
+            headers.Authorization = `Bearer ${token}`;
+        }
+        
         return fetch('/api/remote-worktimes/list', {
             method: "GET",
             mode: "same-origin",
-            headers: {
-                "Content-Type": "application/json",
-            },
+            headers
         });
     }
 

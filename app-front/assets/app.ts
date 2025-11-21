@@ -2,6 +2,15 @@ import { registerReactControllerComponents } from '@symfony/ux-react';
 import './stimulus_bootstrap.ts';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
+import keycloak from './react/services/Keycloak';
+
+keycloak.init({ onLoad: 'login-required' }).then((authenticated: boolean) => {
+  if (!authenticated) {
+    keycloak.login();
+  } else {
+    console.log('Authenticated: ' + keycloak.token);
+  }
+});
 
 /*
  * Welcome to your app's main JavaScript file!

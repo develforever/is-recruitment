@@ -52,5 +52,48 @@ services:
     depends_on:
     - app
 
+  keycloak-db:
+    image: postgres:16
+    container_name: keycloak-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: keycloak
+      POSTGRES_USER: keycloak
+      POSTGRES_PASSWORD: keycloak
+    volumes:
+      - keycloak_db_data:/var/lib/postgresql/data
+    networks:
+      - time-work-network
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.0
+    container_name: keycloak
+    restart: unless-stopped
+    command:
+      - start-dev
+      - --hostname-strict=false
+      # ewentualnie:
+      # - --hostname=keycloak.localhost
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+      KC_DB: postgres
+      KC_DB_USERNAME: keycloak
+      KC_DB_PASSWORD: keycloak
+      KC_DB_URL_HOST: keycloak-db
+      KC_DB_URL_DATABASE: keycloak
+      KC_DB_URL_PORT: 5432
+    ports:
+      - "8080:8080"      # z hosta: http://localhost:8080
+    depends_on:
+      - keycloak-db
+    networks:
+      - time-work-network
+
 volumes:
   db_data:
+  keycloak_db_data:
+
+networks:
+  time-work-network:
+    driver: bridge
