@@ -13,6 +13,8 @@ services:
       DATABASE_URL: 'mysql://symfony:symfony@db:3306/time_tracker?serverVersion=10.11.2-MariaDB&charset=utf8mb4'
     depends_on:
     - db
+    networks:
+      - time-work-network
 
   db:
     image: mariadb:10.11
@@ -51,6 +53,8 @@ services:
       APP_ENV: dev
     depends_on:
     - app
+    networks:
+      - time-work-network
 
   keycloak-db:
     image: postgres:16
