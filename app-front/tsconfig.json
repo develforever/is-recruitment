@@ -9,7 +9,9 @@
     "allowJs": true,
     "skipLibCheck": true,
     "noEmit": false,
-    "baseUrl": "."
+    "baseUrl": ".",
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true
   },
   "include": [
     "assets/**/*.ts",

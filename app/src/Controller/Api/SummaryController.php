@@ -6,11 +6,13 @@ use App\Entity\Employee;
 use App\Repository\WorkTimeRepository;
 use App\Service\TimeCalculator;
 use Doctrine\ORM\EntityManagerInterface;
+use Nelmio\ApiDocBundle\Attribute\Security as NelmioSecurity;
 use OpenApi\Attributes as OA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/api/summary')]
 class SummaryController extends AbstractController
@@ -27,12 +29,14 @@ class SummaryController extends AbstractController
     }
 
     #[Route('', name: 'api_summary_get', methods: ['GET'])]
+    #[IsGranted('ROLE_USER')]
+    #[NelmioSecurity(name: 'Bearer')]
     #[OA\Get(
         path: '/api/summary',
         summary: 'Podsumowanie czasu pracy',
         parameters: [
             new OA\Parameter(name: 'employeeId', in: 'query', required: true, schema: new OA\Schema(type: 'string')),
-            new OA\Parameter(name: 'date', in: 'query', required: true, schema: new OA\Schema(type: 'string', example: '2025-11 or 2025-11-15')),
+            new OA\Parameter(name: 'date', in: 'query', required: true, schema: new OA\Schema(type: 'string', example: '2025-11')),
         ],
         responses: [
             new OA\Response(response: 200, description: 'Podsumowanie'),
