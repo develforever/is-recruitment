@@ -95,7 +95,7 @@ class KeycloakJwtAuthenticator extends AbstractAuthenticator
         );
     }
 
-    private function decodeJwt(string $token):stdClass
+    private function decodeJwt(string $token): stdClass
     {
         try {
             $decoded = JWT::decode($token, new Key($this->publicKeyPem, 'RS256'));
