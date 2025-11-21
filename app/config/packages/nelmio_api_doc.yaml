@@ -1,0 +1,14 @@
+nelmio_api_doc:
+    documentation:
+        openapi: 3.0.0
+        info:
+            title: Time Work API
+            description: This is an awesome app!
+            version: 1.0.0
+        servers:
+            - url: http://localhost:8000
+              description: Local server
+
+    areas: # to filter documented areas
+        path_patterns:
+            - ^/api(?!/doc$) # Accepts routes under /api except /api/doc

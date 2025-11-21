@@ -6,6 +6,7 @@ use App\Entity\Employee;
 use App\Entity\WorkTime;
 use App\Repository\WorkTimeRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use OpenApi\Attributes as OA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -24,6 +25,26 @@ class WorkTimeController extends AbstractController
     }
 
     #[Route('', name: 'api_worktimes_create', methods: ['POST'])]
+    #[OA\Post(
+        path: '/api/worktimes',
+        summary: 'Dodaje czas pracy pracownika',
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                required: ['employeeId', 'startAt', 'endAt'],
+                properties: [
+                    new OA\Property(property: 'employeeId', type: 'string', example: 'uuid'),
+                    new OA\Property(property: 'startAt', type: 'string', format: 'date-time', example: '2025-11-01T08:00:00+01:00'),
+                    new OA\Property(property: 'endAt', type: 'string', format: 'date-time', example: '2025-11-01T16:00:00+01:00'),
+                    new OA\Property(property: 'description', type: 'string', nullable: true, example: 'Praca nad feature X'),
+                ]
+            )
+        ),
+        responses: [
+            new OA\Response(response: 201, description: 'Czas pracy zapisany'),
+            new OA\Response(response: 400, description: 'Błąd walidacji'),
+        ]
+    )]
     public function create(Request $request, EntityManagerInterface $em, ValidatorInterface $validator): JsonResponse
     {
         $data = json_decode($request->getContent(), true);
