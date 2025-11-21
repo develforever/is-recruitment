@@ -56,12 +56,12 @@ class Employee
         $this->lastName = $lastName;
         return $this;
     }
-    
+
     public function getKeycloakId(): ?UuidInterface
     {
         return $this->keycloakId;
     }
-    
+
     public function setKeycloakId(?UuidInterface $keycloakId): self
     {
         $this->keycloakId = $keycloakId;

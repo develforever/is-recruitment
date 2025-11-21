@@ -87,7 +87,9 @@ class InMemoryUser implements UserInterface, PasswordAuthenticatedUserInterface,
     }
 
     #[\Deprecated(since: 'symfony/security-core 7.3')]
-    public function eraseCredentials(): void {}
+    public function eraseCredentials(): void
+    {
+    }
 
     public function getAttribute(string $name): mixed
     {

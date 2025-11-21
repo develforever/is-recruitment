@@ -28,8 +28,8 @@ class GetWorkTimeController extends AbstractController
         /** @var InMemoryUser|null $user */
         $user = $this->getUser();
         $keycloakId = $user->getAttribute('keycloak_id');
-        
-        $employee = $employeeRepo->findOneBy(['keycloakId' =>\Ramsey\Uuid\Uuid::fromString($keycloakId)]);
+
+        $employee = $employeeRepo->findOneBy(['keycloakId' => \Ramsey\Uuid\Uuid::fromString($keycloakId)]);
         if (!$employee instanceof Employee) {
             return new JsonResponse(['error' => 'Employee not found ' . var_export($employee, true)], 404);
         }
