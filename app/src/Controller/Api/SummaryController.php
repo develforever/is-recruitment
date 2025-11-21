@@ -6,13 +6,13 @@ use App\Entity\Employee;
 use App\Repository\WorkTimeRepository;
 use App\Service\TimeCalculator;
 use Doctrine\ORM\EntityManagerInterface;
+use Nelmio\ApiDocBundle\Attribute\Security as NelmioSecurity;
 use OpenApi\Attributes as OA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
-use Nelmio\ApiDocBundle\Attribute\Security as NelmioSecurity;
 
 #[Route('/api/summary')]
 class SummaryController extends AbstractController

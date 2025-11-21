@@ -68,7 +68,7 @@ class KeycloakJwtAuthenticator extends AbstractAuthenticator
                     $roles = array_merge(
                         $roles,
                         array_map(
-                            static fn(string $r) => 'ROLE_' . strtoupper($r),
+                            static fn (string $r) => 'ROLE_' . strtoupper($r),
                             $decoded->realm_access->roles
                         )
                     );
@@ -79,7 +79,7 @@ class KeycloakJwtAuthenticator extends AbstractAuthenticator
                     $roles = array_merge(
                         $roles,
                         array_map(
-                            static fn(string $r) => 'ROLE_' . strtoupper($r),
+                            static fn (string $r) => 'ROLE_' . strtoupper($r),
                             $decoded->resource_access->{'app-front'}->roles
                         )
                     );
