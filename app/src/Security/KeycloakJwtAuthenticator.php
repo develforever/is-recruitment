@@ -4,9 +4,11 @@ namespace App\Security;
 
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
+use stdClass;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Core\User\InMemoryUser;
 use Symfony\Component\Security\Http\Authenticator\AbstractAuthenticator;
@@ -93,7 +95,7 @@ class KeycloakJwtAuthenticator extends AbstractAuthenticator
         );
     }
 
-    private function decodeJwt(string $token)
+    private function decodeJwt(string $token):stdClass
     {
         try {
             $decoded = JWT::decode($token, new Key($this->publicKeyPem, 'RS256'));
@@ -141,7 +143,7 @@ class KeycloakJwtAuthenticator extends AbstractAuthenticator
             "-----END PUBLIC KEY-----\n";
     }
 
-    public function onAuthenticationSuccess(Request $request, $token, string $firewallName): ?Response
+    public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response
     {
         return null; // lecimy do kontrolera
     }
