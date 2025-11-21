@@ -13,6 +13,8 @@ services:
       DATABASE_URL: 'mysql://symfony:symfony@db:3306/time_tracker?serverVersion=10.11.2-MariaDB&charset=utf8mb4'
     depends_on:
     - db
+    networks:
+      - time-work-network
 
   db:
     image: mariadb:10.11
@@ -26,6 +28,8 @@ services:
     - '3306:3306'
     volumes:
     - db_data:/var/lib/mysql
+    networks:
+      - time-work-network
 
   adminer:
     image: adminer:latest
@@ -35,6 +39,8 @@ services:
       - "8081:8080"
     depends_on:
       - db
+    networks:
+      - time-work-network
 
   app-front:
     build:
@@ -51,6 +57,51 @@ services:
       APP_ENV: dev
     depends_on:
     - app
+    networks:
+      - time-work-network
+
+  keycloak-db:
+    image: postgres:16
+    container_name: keycloak-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: keycloak
+      POSTGRES_USER: keycloak
+      POSTGRES_PASSWORD: keycloak
+    volumes:
+      - keycloak_db_data:/var/lib/postgresql/data
+    networks:
+      - time-work-network
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.0
+    container_name: keycloak
+    restart: unless-stopped
+    command:
+      - start-dev
+      - --hostname-strict=false
+      # ewentualnie:
+      # - --hostname=keycloak.localhost
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+      KC_DB: postgres
+      KC_DB_USERNAME: keycloak
+      KC_DB_PASSWORD: keycloak
+      KC_DB_URL_HOST: keycloak-db
+      KC_DB_URL_DATABASE: keycloak
+      KC_DB_URL_PORT: 5432
+    ports:
+      - "8080:8080"      # z hosta: http://localhost:8080
+    depends_on:
+      - keycloak-db
+    networks:
+      - time-work-network
 
 volumes:
   db_data:
+  keycloak_db_data:
+
+networks:
+  time-work-network:
+    driver: bridge
