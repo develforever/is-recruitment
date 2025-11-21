@@ -26,14 +26,17 @@ class RemoteWorkTimeController extends AbstractController
         }
 
         try {
+
+            $workDay = $data['workDay'] ?? date('Y-m-d');
             $response = $this->httpClient->request(
                 'POST',
                 rtrim($this->remoteBaseUrl, '/') . '/api/worktimes',
                 [
                     'json' => [
                         'employeeId' => $this->fakeEmployeeId,
-                        'startAt' => date('Y-m-dT').$data['startAt'] ?? '2025-11-01 08:00:00+00:00',
-                        'endAt' => date('Y-m-dT').$data['endAt'] ?? '2025-11-01 16:00:00+00:00',
+                        'startAt' => $workDay . 'T' . ($data['startAt'] ?? '08:00:00+00:00'),
+                        'endAt' => $workDay . 'T' . ($data['endAt'] ?? '16:00:00+00:00'),
+                        'description' => $data['description'] ?? null,
                     ],
                     'timeout' => 5.0,
                 ]

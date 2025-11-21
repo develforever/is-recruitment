@@ -42,12 +42,16 @@ curl 'http://localhost:8000/api/summary?employeeId=<uuid>&date=2025-11-01'
 
 ```
 
-You may use `End-to-End Tests.postman_collection.json`. Import this file in Postman app.
+You may use `End-to-End Tests.postman_collection.json`. Import this file in Postman app. 
+
+Alternatively use Swagger `http://localhost:8000/api/doc`
 
 
 # TODO
 
-Add user description for reported work
+Done - Add Nelmio and Swagger support
+Done - Add user description for reported work
+Add Api DTO for request params mapping
 Add Keycloak for user identity management and more flexible time report for users eg. from mobile app.
 
  
