@@ -10,7 +10,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
-use Symfony\Component\Security\Core\User\InMemoryUser;
 use Symfony\Component\Security\Http\Authenticator\AbstractAuthenticator;
 use Symfony\Component\Security\Http\Authenticator\Passport\Badge\UserBadge;
 use Symfony\Component\Security\Http\Authenticator\Passport\Passport;
@@ -89,8 +88,13 @@ class KeycloakJwtAuthenticator extends AbstractAuthenticator
 
                 $roles = array_values(array_unique($roles));
 
-
-                return new InMemoryUser($username, '', $roles);
+                $enabled = !($decoded->disabled ?? false);
+                return new InMemoryUser($username, '', $roles, $enabled, [
+                    'keycloak_id' => $decoded->sub,
+                    'first_name' => $decoded->given_name ?? '',
+                    'last_name' => $decoded->family_name ?? '',
+                    'email' => $decoded->email ?? '',
+                ]);
             })
         );
     }

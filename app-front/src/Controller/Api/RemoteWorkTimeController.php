@@ -14,7 +14,6 @@ class RemoteWorkTimeController extends AbstractController
     public function __construct(
         private HttpClientInterface $httpClient,
         private string $remoteBaseUrl,
-        private string $fakeEmployeeId,
     ) {}
 
     #[Route('/api/remote-worktimes/create', name: 'api_remote_worktimes_create', methods: ['POST'])]
@@ -38,7 +37,6 @@ class RemoteWorkTimeController extends AbstractController
                         'Accept' => 'application/json',
                     ],
                     'json' => [
-                        'employeeId' => $this->fakeEmployeeId,
                         'startAt' => $workDay . 'T' . ($data['startAt'] ?? '08:00:00+00:00'),
                         'endAt' => $workDay . 'T' . ($data['endAt'] ?? '16:00:00+00:00'),
                         'description' => $data['description'] ?? null,
@@ -74,9 +72,6 @@ class RemoteWorkTimeController extends AbstractController
                     'headers' => [
                         'Authorization' => $authHeader,
                         'Accept' => 'application/json',
-                    ],
-                    'query' => [
-                        'employeeId' => $this->fakeEmployeeId,
                     ],
                     'timeout' => 5.0,
                 ]
