@@ -6,6 +6,7 @@ use App\Entity\Employee;
 use App\Entity\WorkTime;
 use App\Repository\EmployeeRepository;
 use App\Repository\WorkTimeRepository;
+use App\Security\InMemoryUser;
 use OpenApi\Attributes as OA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;

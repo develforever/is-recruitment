@@ -3,9 +3,10 @@
 namespace App\Controller\Api;
 
 use App\Entity\Employee;
+use App\Repository\EmployeeRepository;
 use App\Repository\WorkTimeRepository;
+use App\Security\InMemoryUser;
 use App\Service\TimeCalculator;
-use Doctrine\ORM\EntityManagerInterface;
 use Nelmio\ApiDocBundle\Attribute\Security as NelmioSecurity;
 use OpenApi\Attributes as OA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -19,13 +20,11 @@ class SummaryController extends AbstractController
 {
     private WorkTimeRepository $repo;
     private TimeCalculator $calc;
-    private EntityManagerInterface $em;
 
-    public function __construct(WorkTimeRepository $repo, TimeCalculator $calc, EntityManagerInterface $em)
+    public function __construct(WorkTimeRepository $repo, TimeCalculator $calc)
     {
         $this->repo = $repo;
         $this->calc = $calc;
-        $this->em = $em;
     }
 
     #[Route('', name: 'api_summary_get', methods: ['GET'])]
@@ -35,7 +34,6 @@ class SummaryController extends AbstractController
         path: '/api/summary',
         summary: 'Podsumowanie czasu pracy',
         parameters: [
-            new OA\Parameter(name: 'employeeId', in: 'query', required: true, schema: new OA\Schema(type: 'string')),
             new OA\Parameter(name: 'date', in: 'query', required: true, schema: new OA\Schema(type: 'string', example: '2025-11')),
         ],
         responses: [
@@ -43,18 +41,18 @@ class SummaryController extends AbstractController
             new OA\Response(response: 400, description: 'Błędne parametry'),
         ]
     )]
-    public function get(Request $request): JsonResponse
+    public function get(Request $request, EmployeeRepository $employeeRepo): JsonResponse
     {
-        $employeeId = $request->query->get('employeeId');
+
         $date = $request->query->get('date'); // YYYY-MM or YYYY-MM-DD
 
-        if (!$employeeId || !$date) {
-            return new JsonResponse(['error' => 'employeeId and date are required'], 400);
-        }
+        /** @var InMemoryUser|null $user */
+        $user = $this->getUser();
+        $keycloakId = $user->getAttribute('keycloak_id');
 
-        $employee = $this->em->getRepository(Employee::class)->find($employeeId);
+        $employee = $employeeRepo->findOneBy(['keycloakId' => \Ramsey\Uuid\Uuid::fromString($keycloakId)]);
         if (!$employee instanceof Employee) {
-            return new JsonResponse(['error' => 'Employee not found'], 404);
+            return new JsonResponse(['error' => 'Employee not found ' . var_export($employee, true)], 404);
         }
 
         // day summary (YYYY-MM-DD)

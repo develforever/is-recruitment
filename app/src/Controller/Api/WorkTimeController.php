@@ -5,6 +5,7 @@ namespace App\Controller\Api;
 use App\Entity\Employee;
 use App\Entity\WorkTime;
 use App\Repository\WorkTimeRepository;
+use App\Security\InMemoryUser;
 use Doctrine\ORM\EntityManagerInterface;
 use OpenApi\Attributes as OA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;

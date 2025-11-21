@@ -10,6 +10,13 @@ class InMemoryUser implements UserInterface, PasswordAuthenticatedUserInterface,
 {
     private string $username;
 
+    /**
+     * @param string|null $username The username of the user
+     * @param string|null $password The encoded password of the user
+     * @param array<int, string> $roles The roles granted to the user
+     * @param bool $enabled Whether the user is enabled
+     * @param array<string, mixed> $attributes Additional attributes of the user
+     */
     public function __construct(
         ?string $username,
         private ?string $password,
