@@ -13,40 +13,43 @@ export class TimeTraker {
 
     reportWork(workTime: WorkTime): Promise<Response> {
 
-        const token = null; //keycloak.token;
+        return keycloak().then((auth) => {
+            const token = auth.token;
 
-        const headers: HeadersInit = {
-            'Content-Type': 'application/json',
-        };
+            const headers: HeadersInit = {
+                'Content-Type': 'application/json',
+            };
 
-        if (token) {
-            headers.Authorization = `Bearer ${token}`;
-        }
+            if (token) {
+                headers.Authorization = `Bearer ${token}`;
+            }
 
-        return fetch('/api/remote-worktimes/create', {
-            method: "POST",
-            mode: "same-origin",
-            headers,
-            body: JSON.stringify(workTime)
+            return fetch('/api/remote-worktimes/create', {
+                method: "POST",
+                mode: "same-origin",
+                headers,
+                body: JSON.stringify(workTime)
+            });
         });
     }
 
     listWork(): Promise<Response> {
 
-        const token = null; //keycloak.token;
+        return keycloak().then((auth) => {
+            const token = auth.token;
+            const headers: HeadersInit = {
+                'Content-Type': 'application/json',
+            };
 
-        const headers: HeadersInit = {
-            'Content-Type': 'application/json',
-        };
+            if (token) {
+                headers.Authorization = `Bearer ${token}`;
+            }
 
-        if (token) {
-            headers.Authorization = `Bearer ${token}`;
-        }
-        
-        return fetch('/api/remote-worktimes/list', {
-            method: "GET",
-            mode: "same-origin",
-            headers
+            return fetch('/api/remote-worktimes/list', {
+                method: "GET",
+                mode: "same-origin",
+                headers
+            });
         });
     }
 
