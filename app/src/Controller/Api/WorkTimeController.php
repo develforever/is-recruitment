@@ -31,7 +31,7 @@ class WorkTimeController extends AbstractController
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
-                required: ['employeeId', 'startAt', 'endAt'],
+                required: ['startAt', 'endAt'],
                 properties: [
                     new OA\Property(property: 'employeeId', type: 'string', example: 'uuid'),
                     new OA\Property(property: 'startAt', type: 'string', format: 'date-time', example: '2025-11-01T08:00:00+01:00'),
@@ -47,10 +47,13 @@ class WorkTimeController extends AbstractController
     )]
     public function create(Request $request, EntityManagerInterface $em, ValidatorInterface $validator): JsonResponse
     {
+        /** @var InMemoryUser|null $user */
+        $user = $this->getUser();
+        $keycloakId = $user->getAttribute('keycloak_id');
+
         $data = json_decode($request->getContent(), true);
 
         $constraints = new Assert\Collection([
-            'employeeId' => [new Assert\NotBlank()],
             'startAt' => [new Assert\NotBlank()],
             'endAt' => [new Assert\NotBlank()],
             'description' => [new Assert\Optional([new Assert\Type('string'), new Assert\Length(['max' => 255])])],
@@ -65,9 +68,9 @@ class WorkTimeController extends AbstractController
             return new JsonResponse(['error' => $msgs], 400);
         }
 
-        $employee = $em->getRepository(Employee::class)->find($data['employeeId']);
+        $employee = $em->getRepository(Employee::class)->findOneBy(['keycloakId' => \Ramsey\Uuid\Uuid::fromString($keycloakId)]);
         if (!$employee instanceof Employee) {
-            return new JsonResponse(['error' => 'Employee not found'], 404);
+            return new JsonResponse(['error' => 'Employee not found' . var_export($employee, true)], 404);
         }
 
         try {

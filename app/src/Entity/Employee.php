@@ -20,6 +20,9 @@ class Employee
     #[ORM\Column(type: 'string', length: 100)]
     private string $lastName;
 
+    #[ORM\Column(type: 'uuid', nullable: true)]
+    private ?UuidInterface $keycloakId;
+
     public function __construct(string $firstName, string $lastName)
     {
         $this->id = Uuid::uuid4();
@@ -51,6 +54,17 @@ class Employee
     public function setLastName(string $lastName): self
     {
         $this->lastName = $lastName;
+        return $this;
+    }
+    
+    public function getKeycloakId(): ?UuidInterface
+    {
+        return $this->keycloakId;
+    }
+    
+    public function setKeycloakId(?UuidInterface $keycloakId): self
+    {
+        $this->keycloakId = $keycloakId;
         return $this;
     }
 }

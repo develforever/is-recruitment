@@ -18,24 +18,20 @@ class GetWorkTimeController extends AbstractController
     #[Route('', name: 'api_worktimes_list', methods: ['GET'])]
     #[OA\Get(
         path: '/api/worktimes',
-        summary: 'Pobranie listy czasów pracy pracownika',
-        parameters: [
-            new OA\Parameter(name: 'employeeId', in: 'query', required: true, schema: new OA\Schema(type: 'string')),
-        ],
+        summary: 'Zaraportowane czasy pracy pracownika',
         responses: [
             new OA\Response(response: 200, description: 'Lista czasów pracy'),
         ]
     )]
     public function list(Request $request, EmployeeRepository $employeeRepo, WorkTimeRepository $workRepo): JsonResponse
     {
-        $requestedEmployeeId = $request->query->get('employeeId');
-        if (!$requestedEmployeeId) {
-            return new JsonResponse(['error' => 'employeeId is required'], 400);
-        }
-
-        $employee = $employeeRepo->find($requestedEmployeeId);
+        /** @var InMemoryUser|null $user */
+        $user = $this->getUser();
+        $keycloakId = $user->getAttribute('keycloak_id');
+        
+        $employee = $employeeRepo->findOneBy(['keycloakId' =>\Ramsey\Uuid\Uuid::fromString($keycloakId)]);
         if (!$employee instanceof Employee) {
-            return new JsonResponse(['error' => 'Employee not found'], 404);
+            return new JsonResponse(['error' => 'Employee not found ' . var_export($employee, true)], 404);
         }
 
         $workTime = $workRepo->findBy(['employee' => $employee], ['startAt' => 'DESC']);

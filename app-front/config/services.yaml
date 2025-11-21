@@ -20,7 +20,9 @@ services:
     App\Controller\Api\RemoteWorkTimeController:
         arguments:
             $remoteBaseUrl: '%remote_worktime_api_base_url%'
-            $fakeEmployeeId: '%env(FAKE_EMPLOYEE_ID)%'
+    App\Controller\Api\RemoteUserController:
+        arguments:
+            $remoteBaseUrl: '%remote_worktime_api_base_url%'
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
