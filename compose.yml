@@ -28,6 +28,8 @@ services:
     - '3306:3306'
     volumes:
     - db_data:/var/lib/mysql
+    networks:
+      - time-work-network
 
   adminer:
     image: adminer:latest
@@ -37,6 +39,8 @@ services:
       - "8081:8080"
     depends_on:
       - db
+    networks:
+      - time-work-network
 
   app-front:
     build:

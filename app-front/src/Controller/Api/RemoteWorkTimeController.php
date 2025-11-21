@@ -27,11 +27,16 @@ class RemoteWorkTimeController extends AbstractController
 
         try {
 
+            $authHeader = $request->headers->get('Authorization');
             $workDay = $data['workDay'] ?? date('Y-m-d');
             $response = $this->httpClient->request(
                 'POST',
                 rtrim($this->remoteBaseUrl, '/') . '/api/worktimes',
                 [
+                    'headers' => [
+                        'Authorization' => $authHeader,
+                        'Accept' => 'application/json',
+                    ],
                     'json' => [
                         'employeeId' => $this->fakeEmployeeId,
                         'startAt' => $workDay . 'T' . ($data['startAt'] ?? '08:00:00+00:00'),
@@ -59,11 +64,17 @@ class RemoteWorkTimeController extends AbstractController
     {
 
         try {
-            // Wyślij dalej do zewnętrznego API (np. /api/worktimes)
+
+            $authHeader = $request->headers->get('Authorization');
+
             $response = $this->httpClient->request(
                 'GET',
                 rtrim($this->remoteBaseUrl, '/') . '/api/worktimes',
                 [
+                    'headers' => [
+                        'Authorization' => $authHeader,
+                        'Accept' => 'application/json',
+                    ],
                     'query' => [
                         'employeeId' => $this->fakeEmployeeId,
                     ],
@@ -71,7 +82,6 @@ class RemoteWorkTimeController extends AbstractController
                 ]
             );
         } catch (TransportExceptionInterface $e) {
-            // Problem z połączeniem / timeout
             return new JsonResponse([
                 'error' => 'Remote API unreachable',
                 'details' => $e->getMessage(),

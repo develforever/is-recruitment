@@ -4,7 +4,6 @@ namespace App\Security;
 
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
-use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -17,22 +16,31 @@ use Symfony\Component\Security\Http\Authenticator\Passport\SelfValidatingPasspor
 
 class KeycloakJwtAuthenticator extends AbstractAuthenticator
 {
-    private array $jwks;
     private string $issuer;
     private string $audience;
+    private string $publicKeyPem;
 
-    public function __construct(string $jwksUrl, string $issuer, string $audience)
+    public function __construct(string $issuer, string $audience, string $publicKey)
     {
         $this->issuer = $issuer;
         $this->audience = $audience;
-
-        $client = HttpClient::create();
-        $response = $client->request('GET', $jwksUrl);
-        $this->jwks = $response->toArray();
+        $this->publicKeyPem = $this->normalizePublicKey($publicKey);
+        JWT::$leeway = 60; // 1 minute leeway for nbf, iat, exp
     }
 
     public function supports(Request $request): ?bool
     {
+        // file_put_contents(
+        //     '/tmp/keycloak_auth.log',
+        //     sprintf(
+        //         "[%s] supports? path=%s, auth=%s\n",
+        //         date('c'),
+        //         $request->getPathInfo(),
+        //         $request->headers->get('Authorization', 'NONE')
+        //     ),
+        //     FILE_APPEND
+        // );
+
         return $request->headers->has('Authorization');
     }
 
@@ -55,48 +63,54 @@ class KeycloakJwtAuthenticator extends AbstractAuthenticator
             new UserBadge($username, function () use ($username, $decoded) {
                 $roles = [];
 
+                // realm roles
                 if (isset($decoded->realm_access->roles)) {
-                    $roles = array_map(
-                        static fn (string $r) => 'ROLE_' . strtoupper($r),
-                        $decoded->realm_access->roles
+                    $roles = array_merge(
+                        $roles,
+                        array_map(
+                            static fn(string $r) => 'ROLE_' . strtoupper($r),
+                            $decoded->realm_access->roles
+                        )
                     );
                 }
 
-                return new InMemoryUser($username, null, $roles);
+                // client roles (np. app-api)
+                if (isset($decoded->resource_access->{'app-front'}->roles)) {
+                    $roles = array_merge(
+                        $roles,
+                        array_map(
+                            static fn(string $r) => 'ROLE_' . strtoupper($r),
+                            $decoded->resource_access->{'app-front'}->roles
+                        )
+                    );
+                }
+
+                $roles = array_values(array_unique($roles));
+
+
+                return new InMemoryUser($username, '', $roles);
             })
         );
     }
 
     private function decodeJwt(string $token)
     {
-        $parts = explode('.', $token);
-        if (count($parts) !== 3) {
-            throw new AuthenticationException('Invalid JWT structure');
+        try {
+            $decoded = JWT::decode($token, new Key($this->publicKeyPem, 'RS256'));
+        } catch (\Throwable $e) {
+            // file_put_contents(
+            //     '/tmp/keycloak_auth.log',
+            //     sprintf("[%s] decode error: %s\n", date('c'), $e->getMessage()),
+            //     FILE_APPEND
+            // );
+            throw new AuthenticationException('Invalid token: ' . $e->getMessage(), 0, $e);
         }
 
-        $header = json_decode(base64_decode($parts[0]), true, 512, JSON_THROW_ON_ERROR);
-        $kid = $header['kid'] ?? null;
-
-        $keyData = null;
-        foreach ($this->jwks['keys'] as $jwk) {
-            if (($jwk['kid'] ?? null) === $kid) {
-                $keyData = $jwk;
-                break;
-            }
-        }
-
-        if (!$keyData) {
-            throw new AuthenticationException('Unknown key id');
-        }
-
-        $publicKey = $this->jwkToPem($keyData);
-        $decoded = JWT::decode($token, new Key($publicKey, 'RS256'));
-
-        if ($decoded->iss !== $this->issuer) {
+        if (($decoded->iss ?? null) !== $this->issuer) {
             throw new AuthenticationException('Invalid issuer');
         }
 
-        $aud = (array) $decoded->aud;
+        $aud = (array) ($decoded->aud ?? []);
         if (!in_array($this->audience, $aud, true)) {
             throw new AuthenticationException('Invalid audience');
         }
@@ -104,56 +118,32 @@ class KeycloakJwtAuthenticator extends AbstractAuthenticator
         return $decoded;
     }
 
-    private function jwkToPem(array $jwk): string
+    /**
+     * Przyjmuje:
+     *  - goły klucz z Keycloak (MIIBIjANBgkq...)
+     *  - lub pełny PEM z BEGIN/END
+     * i zwraca poprawny PEM do OpenSSL.
+     */
+    private function normalizePublicKey(string $key): string
     {
-        $n = strtr($jwk['n'], '-_', '+/');
-        $e = strtr($jwk['e'], '-_', '+/');
+        $key = trim($key);
 
-        $modulus = base64_decode($n);
-        $exponent = base64_decode($e);
-
-        $components = [
-            'modulus'        => pack('Ca*a*', 2, $this->encodeLength(strlen($modulus)), $modulus),
-            'publicExponent' => pack('Ca*a*', 2, $this->encodeLength(strlen($exponent)), $exponent),
-        ];
-
-        $rsaPublicKey = pack(
-            'Ca*a*a*',
-            48,
-            $this->encodeLength(strlen($components['modulus'] . $components['publicExponent'])),
-            $components['modulus'],
-            $components['publicExponent']
-        );
-
-        $publicKeyInfo = pack(
-            'Ca*a*Ca*a*',
-            48,
-            $this->encodeLength(strlen("\x30\x0D\x06\x09\x2A\x86\x48\x86\xF7\x0D\x01\x01\x01\x05\x00") + strlen($rsaPublicKey) + 2),
-            "\x30\x0D\x06\x09\x2A\x86\x48\x86\xF7\x0D\x01\x01\x01\x05\x00",
-            3,
-            $this->encodeLength(strlen($rsaPublicKey) + 1),
-            "\x00" . $rsaPublicKey
-        );
-
-        return "-----BEGIN PUBLIC KEY-----\n" .
-            chunk_split(base64_encode($publicKeyInfo), 64, "\n") .
-            "-----END PUBLIC KEY-----\n";
-    }
-
-    private function encodeLength(int $length): string
-    {
-        if ($length <= 0x7F) {
-            return chr($length);
+        if (str_contains($key, 'BEGIN PUBLIC KEY')) {
+            // Zakładamy, że już jest poprawnym PEM-em
+            return $key;
         }
 
-        $temp = ltrim(pack('N', $length), "\x00");
-        return chr(0x80 | strlen($temp)) . $temp;
+        // To jest goły base64 z Keycloak -> owijamy w PEM
+        $wrapped = chunk_split($key, 64, "\n");
+
+        return "-----BEGIN PUBLIC KEY-----\n" .
+            $wrapped .
+            "-----END PUBLIC KEY-----\n";
     }
 
     public function onAuthenticationSuccess(Request $request, $token, string $firewallName): ?Response
     {
-        // null = przepuszczamy dalej do kontrolera
-        return null;
+        return null; // lecimy do kontrolera
     }
 
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception): ?Response

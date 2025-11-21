@@ -20,6 +20,6 @@ services:
     # please note that last definitions always *replace* previous ones
     App\Security\KeycloakJwtAuthenticator:
         arguments:
-            $jwksUrl: '%env(KEYCLOAK_JWKS_URL)%'
             $issuer: '%env(KEYCLOAK_ISSUER)%'
             $audience: '%env(KEYCLOAK_AUDIENCE)%'
+            $publicKey: '%env(KEYCLOAK_PUBLIC_KEY)%'
