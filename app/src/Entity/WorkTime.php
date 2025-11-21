@@ -27,13 +27,17 @@ class WorkTime
     #[ORM\Column(type: 'date')]
     private \DateTimeInterface $startDay;
 
-    public function __construct(Employee $employee, \DateTimeInterface $startAt, \DateTimeInterface $endAt)
+    #[ORM\Column(type: 'text', nullable: true, length: 255)]
+    private string $description;
+
+    public function __construct(Employee $employee, \DateTimeInterface $startAt, \DateTimeInterface $endAt, ?string $description = null)
     {
         $this->id = Uuid::uuid4();
         $this->employee = $employee;
         $this->startAt = $startAt;
         $this->endAt = $endAt;
         $this->startDay = new \DateTimeImmutable($startAt->format('Y-m-d'));
+        $this->description = $description;
     }
 
     public function getId(): UuidInterface
@@ -64,5 +68,10 @@ class WorkTime
     public function getDurationSeconds(): int
     {
         return (int) ($this->endAt->getTimestamp() - $this->startAt->getTimestamp());
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->description;
     }
 }

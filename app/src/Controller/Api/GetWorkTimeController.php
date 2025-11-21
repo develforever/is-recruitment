@@ -36,6 +36,7 @@ class GetWorkTimeController extends AbstractController
                     'endAt'    => $wt->getEndAt()->format(\DATE_ATOM),
                     'startDay' => $wt->getStartDay()->format('Y-m-d'),
                     'duration' => $wt->getDurationSeconds(),
+                    'description' => $wt->getDescription(),
                 ];
             },
             $workTime

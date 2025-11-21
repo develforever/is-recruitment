@@ -70,7 +70,9 @@ class WorkTimeController extends AbstractController
             return new JsonResponse(['error' => 'Employee already has an entry for this day'], 400);
         }
 
-        $workTime = new WorkTime($employee, $startAt, $endAt);
+        $description = $data['description'] ?? null;
+
+        $workTime = new WorkTime($employee, $startAt, $endAt, $description);
         $em->persist($workTime);
         $em->flush();
 
