@@ -3,6 +3,7 @@
 namespace App\Controller\Api;
 
 use App\Entity\Employee;
+use App\Security\InMemoryUser;
 use Doctrine\ORM\EntityManagerInterface;
 use OpenApi\Attributes as OA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -50,6 +51,9 @@ class EmployeeController extends AbstractController
     )]
     public function create(Request $request, EntityManagerInterface $em, ValidatorInterface $validator): JsonResponse
     {
+        /** @var InMemoryUser|null $user */
+        $user = $this->getUser();
+
         $data = json_decode($request->getContent(), true);
         $constraints = new Assert\Collection([
             'firstName' => [new Assert\NotBlank(), new Assert\Length(['max' => 100])],
@@ -66,6 +70,10 @@ class EmployeeController extends AbstractController
         }
 
         $employee = new Employee($data['firstName'], $data['lastName']);
+        $keycloakId = $user->getAttribute('keycloak_id');
+        if ($keycloakId) {
+            $employee->setKeycloakId(\Ramsey\Uuid\Uuid::fromString($keycloakId));
+        }
         $em->persist($employee);
         $em->flush();
 

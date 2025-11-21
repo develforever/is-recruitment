@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { TimeTraker } from '../services/TimeTraker';
 import keycloak from '../services/Keycloak';
+import { User } from '../services/User';
 
 
 function formatDuration(seconds: number): string {
@@ -16,6 +17,7 @@ function formatDuration(seconds: number): string {
 export default function ReportWork() {
 
   const apiService: TimeTraker = new TimeTraker();
+  const userService: User = new User();
 
   const [name, setName] = React.useState<string | null>(null);
   const [surname, setSurname] = React.useState<string | null>(null);
@@ -80,8 +82,13 @@ export default function ReportWork() {
   React.useEffect(() => {
     keycloak().then((auth) => {
       const data = auth.tokenParsed as any;
+
       setName(data.given_name);
       setSurname(data.family_name);
+
+      return userService.info()
+    }).then(response => {
+
       fetchWorkTimes();
     });
   }, []);
