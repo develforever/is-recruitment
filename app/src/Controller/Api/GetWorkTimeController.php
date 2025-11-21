@@ -27,7 +27,7 @@ class GetWorkTimeController extends AbstractController
             return new JsonResponse(['error' => 'Employee not found'], 404);
         }
 
-        $workTime = $workRepo->findBy(['employee' => $employee]);
+        $workTime = $workRepo->findBy(['employee' => $employee], ['startAt' => 'DESC']);
         $data = array_map(
             function (WorkTime $wt): array {
                 return [

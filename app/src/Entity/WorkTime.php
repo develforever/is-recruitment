@@ -28,7 +28,7 @@ class WorkTime
     private \DateTimeInterface $startDay;
 
     #[ORM\Column(type: 'text', nullable: true, length: 255)]
-    private string $description;
+    private ?string $description;
 
     public function __construct(Employee $employee, \DateTimeInterface $startAt, \DateTimeInterface $endAt, ?string $description = null)
     {

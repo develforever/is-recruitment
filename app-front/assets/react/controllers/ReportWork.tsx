@@ -8,15 +8,21 @@ type Props = {
 };
 
 function formatDuration(seconds: number): string {
-  const hours = seconds / 3600;
-  return `${hours.toFixed(2)} h`;
+  const totalMinutes = Math.floor(seconds / 60);
+  const hours = Math.floor(totalMinutes / 60);
+  const minutes = totalMinutes % 60;
+
+  return `${hours.toString().padStart(2, '0')}h ${minutes
+    .toString()
+    .padStart(2, '0')}m`;
 }
 
-export default function ReportWork({ name = 'Świecie', surname = '' }: Props) {
+export default function ReportWork({ name = '', surname = '' }: Props) {
 
   const apiService: TimeTraker = new TimeTraker();
 
   const [workDescription, setWorkDescription] = React.useState('');
+  const [workDay, setWorkDay] = React.useState<string | undefined>(new Date().toISOString().split('T')[0]);
   const [workStartHour, setWorkStartHour] = React.useState<number | undefined>(8);
   const [workStartMinute, setWorkStartMinute] = React.useState<number | undefined>(0);
   const [workEndHour, setWorkEndHour] = React.useState<number | undefined>(16);
@@ -34,7 +40,9 @@ export default function ReportWork({ name = 'Świecie', surname = '' }: Props) {
 
     const workTime = {
       startAt: `${workStartHour?.toString().padStart(2, '0')}:${workStartMinute?.toString().padStart(2, '0')}:00`,
-      endAt: `${workEndHour?.toString().padStart(2, '0')}:${workEndMinute?.toString().padStart(2, '0')}:00`
+      endAt: `${workEndHour?.toString().padStart(2, '0')}:${workEndMinute?.toString().padStart(2, '0')}:00`,
+      description: workDescription,
+      workDay: workDay,
     };
 
     apiService.reportWork(workTime).then(async response => {
@@ -78,68 +86,94 @@ export default function ReportWork({ name = 'Świecie', surname = '' }: Props) {
   return <div>
     <p>Witaj {name} {surname}!</p>
     <p>To jest komponent ReportWork.</p>
-    <p>{status}</p>
+    <p className='alert alert-primary'>{status}</p>
     <form>
-      <label>
-        Opis pracy:
-        <textarea name="workDescription" />
-      </label>
-      <br />
-      <label>
-        Start pracy (godzina):
-        <input type="number" step={1} name="workStartHour" value={workStartHour}
+      <div className="mb-3">
+        <label className='form-label'>Dzień:</label>
+        <input type="date" name="workDay" className='form-control' value={workDay}
+          onChange={event => {
+            setWorkDay(event.target.value);
+          }} />
+      </div>
+
+      <div className="mb-3">
+        <label className='form-label'>Start pracy (godzina):</label>
+        <input type="number" step={1} className='form-control' name="workStartHour" value={workStartHour}
           onChange={event => {
             const num = Number(event.target.value);
             setWorkStartHour(Number.isNaN(num) ? undefined : num);
           }} />
-        Start pracy (minuta):
-        <input type="number" step={15} min={0} max={59} name="workStartMinute" value={workStartMinute}
+        <label className='form-label'>Start pracy (minuta):</label>
+        <input type="number" step={15} min={0} max={59} className='form-control' name="workStartMinute" value={workStartMinute}
           onChange={event => {
             const num = Number(event.target.value);
             setWorkStartMinute(Number.isNaN(num) ? undefined : num);
           }} />
-      </label>
-      <br />
-      <label>
-        Koniec pracy (godzina):
-        <input type="number" step={1} name="workEndHour" value={workEndHour}
+      </div>
+
+      <div className="mb-3">
+        <label className='form-label'>Koniec pracy (godzina):</label>
+        <input type="number" step={1} className='form-control' name="workEndHour" value={workEndHour}
           onChange={event => {
             const num = Number(event.target.value);
             setWorkEndHour(Number.isNaN(num) ? undefined : num);
           }} />
-        Koniec pracy (minuta):
-        <input type="number" step={15} min={0} max={59} name="workEndMinute" value={workEndMinute}
+        <label className='form-label'>Koniec pracy (minuta):</label>
+        <input type="number" step={15} min={0} max={59} className='form-control' name="workEndMinute" value={workEndMinute}
           onChange={event => {
             const num = Number(event.target.value);
             setWorkEndMinute(Number.isNaN(num) ? undefined : num);
           }} />
-      </label>
-      <br />
-
-      <button type="submit" onClick={report} disabled={workTimes.length > 0}>Zgłoś pracę</button>
-      <br />
-
-      <div>
-        <p>Zarejestrowana praca:</p>
-        {workTimes.map(wt => (
-          <div key={wt.id} className="worktime">
-            <strong>Dzień:</strong> {wt.startDay}<br />
-            <strong>Od:</strong> {new Date(wt.startAt).toLocaleTimeString(undefined, {
-              hour: '2-digit',
-              minute: '2-digit',
-              timeZone: 'UTC',          // <-- kluczowe
-            })}<br />
-            <strong>Do:</strong> {new Date(wt.endAt).toLocaleTimeString(undefined, {
-              hour: '2-digit',
-              minute: '2-digit',
-              timeZone: 'UTC',          // <-- kluczowe
-            })}  <br />
-            <strong>Godziny:</strong> {formatDuration(wt.duration)} <br />
-            <button type="button" onClick={deleteWork} >Usuń - TODO</button>
-          </div>
-        ))}
       </div>
 
+      <div className="mb-3">
+        <label className='form-label'>Opis pracy:</label>
+        <textarea name="workDescription" className='form-control' value={workDescription}
+          placeholder='Enter report description'
+          onChange={event => {
+            setWorkDescription(event.target.value);
+          }} />
+      </div>
+
+      <button type="submit" onClick={report} className="btn btn-primary">Zgłoś pracę</button>
+
+      <div className="worktimes-list mt-4">
+        <h4>Zarejestrowana praca:</h4>
+        <table className="table table-striped">
+          <thead>
+            <tr>
+              <th>Dzień</th>
+              <th>Od</th>
+              <th>Do</th>
+              <th>Godziny</th>
+              <th>Opis</th>
+              <th>Akcje</th>
+            </tr>
+          </thead>
+          <tbody>
+            {workTimes.map(wt => (
+              <tr key={wt.id}>
+                <td>{wt.startDay}</td>
+                <td>{new Date(wt.startAt).toLocaleTimeString(undefined, {
+                  hour: '2-digit',
+                  minute: '2-digit',
+                  timeZone: 'UTC',          // <-- kluczowe
+                })}</td>
+                <td>{new Date(wt.endAt).toLocaleTimeString(undefined, {
+                  hour: '2-digit',
+                  minute: '2-digit',
+                  timeZone: 'UTC',          // <-- kluczowe
+                })}</td>
+                <td>{formatDuration(wt.duration)}</td>
+                <td>{wt.description || '-'}</td>
+                <td>
+                  <button type="button" onClick={deleteWork} className="btn btn-danger btn-sm">Usuń - TODO</button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </form>
   </div>;
 }

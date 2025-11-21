@@ -32,6 +32,7 @@ class WorkTimeController extends AbstractController
             'employeeId' => [new Assert\NotBlank()],
             'startAt' => [new Assert\NotBlank()],
             'endAt' => [new Assert\NotBlank()],
+            'description' => [new Assert\Optional([new Assert\Type('string'), new Assert\Length(['max' => 255])])],
         ]);
 
         $errors = $validator->validate($data, $constraints);

@@ -2,6 +2,8 @@
 interface WorkTime {
     startAt: string;
     endAt: string;
+    description?: string;
+    workDay?: string;
 }
 
 export class TimeTraker {
